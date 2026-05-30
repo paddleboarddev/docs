@@ -1,0 +1,15 @@
+[book]
+authors = ["paddleboarddev"]
+language = "en"
+src = "src"
+title = "PaddleBoard Docs"
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/paddleboarddev/paddleboard"
+edit-url-template = "https://github.com/paddleboarddev/docs/edit/main/{path}"
+no-section-label = false
+
+[output.html.search]
+enable = true
