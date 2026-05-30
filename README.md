@@ -1,13 +1,18 @@
 # PaddleBoard documentation
 
-Documentation for [PaddleBoard](https://github.com/paddleboarddev/paddleboard).
+Task-oriented "how-to" docs for [PaddleBoard](https://github.com/paddleboarddev/paddleboard),
+built with [mdBook](https://rust-lang.github.io/mdBook/) and deployed to GitHub Pages via
+`.github/workflows/mdbook.yml`.
 
-> **Status:** scaffolding. The docs toolchain (mdBook vs Hugo) is not yet chosen —
-> see the discussion in the main repo. For now this repo holds the documentation
-> source; published output will live at a docs subpath/site once the toolchain lands.
+## Local development
 
-## Layout (planned)
+```sh
+cargo install mdbook   # or: brew install mdbook
+mdbook serve           # live-reload at http://localhost:3000
+```
 
-- `src/` — documentation source (Markdown)
-- Getting started, building from source, configuring LLM providers, the AI Dock,
-  agent frameworks, and language tiers.
+Content lives in `src/`; the table of contents is `src/SUMMARY.md`.
+
+## Deploy
+
+Pushing to `main` builds the book and publishes it to GitHub Pages.
