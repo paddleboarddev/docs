@@ -16,6 +16,7 @@
 - [Language Support](./languages.md)
 - [Git Login](./git-login.md)
 - [Sandboxed Execution & MCP](./sandbox.md)
+- [Search & Status Bar Extras](./editor-extras.md)
 
 # Reference
 

@@ -2,6 +2,17 @@
 
 PaddleBoard-specific settings (on top of all of Zed's). Add them to your `settings.json`.
 
+## Search
+
+```json
+{
+  "search": { "search_on_type": true }
+}
+```
+
+Project search runs as you type (default `true`). Set `false` for the classic press-Enter
+behavior. See [Search & Status Bar Extras](./editor-extras.md).
+
 ## Scion
 
 ```json
