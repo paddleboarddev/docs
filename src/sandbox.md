@@ -26,3 +26,29 @@ server; the plain `stdio` transport still works for servers that don't need isol
 Manage servers from the **MCP** tab of the [AI Dock](./ai-dock.md), or the dedicated
 **MCP Servers** settings page (command palette → `zed: Mcp Servers`), which lists configured
 servers and surfaces status and logs without hand-editing JSON.
+
+## Build an MCP for any service
+
+When a service has no MCP server, the **Build an MCP** button at the top of the AI Dock's
+**MCP** tab generates one. You provide:
+
+- a **service** (e.g. `Substack`),
+- an optional **API-docs URL**,
+- an optional **auth env-var name** (e.g. `SUBSTACK_API_KEY`), and
+- a sentence describing **what it should do**.
+
+PaddleBoard then seeds a visible agent thread that researches the service's API, writes a
+Python (FastMCP) server, tests it in the sandbox, and installs it into the AI Dock. Because
+the thread is visible, you can watch the build and course-correct.
+
+The install runs **host-side** (via the `install_mcp_server` tool, which you approve): it
+writes the server under PaddleBoard's data directory — on macOS
+`~/Library/Application Support/PaddleBoard/mcp_servers/<id>/` — and registers it as a plain
+`stdio` context server that runs with `uv run`. The generated server reads its API key from
+the environment PaddleBoard was launched with, so **no secret is ever written to settings**:
+just export the variable (e.g. `export SUBSTACK_API_KEY=…`) in the shell you launch
+PaddleBoard from. Once installed, the server appears in the MCP tab and starts automatically.
+
+> **Requirements.** [`uv`](https://docs.astral.sh/uv/) must be on your `PATH` — it provisions
+> the server's Python dependencies on first launch. Open a project before building, since the
+> agent needs an active workspace to work in.
