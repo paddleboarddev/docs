@@ -14,7 +14,8 @@ Open it from the command palette → **`ai dock: Open`**.
   `/test`, `/check-drift`) with **Add to project** / **Add to user**, or **Create Skill** to
   write a new `.claude/commands/` markdown command.
 - **MCP** — add and manage Model Context Protocol servers, with live status and streaming
-  logs. See [Sandboxed Execution & MCP](./sandbox.md).
+  logs — or **Build an MCP** to have an agent generate one for a service that has none. See
+  [Sandboxed Execution & MCP](./sandbox.md).
 
 The catalog is data-driven from `assets/ai_dock/catalog.json` in the repo — additions are
 pull requests, not network fetches.
