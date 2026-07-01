@@ -3,6 +3,7 @@ authors = ["paddleboarddev"]
 language = "en"
 src = "src"
 title = "PaddleBoard Docs"
+description = "Documentation for PaddleBoard — the open-source AI IDE and coding-agent harness. Guides for getting started, bring-your-own-key LLM providers, the AI Dock, agents, sandboxing, and more."
 
 [output.html]
 default-theme = "navy"
