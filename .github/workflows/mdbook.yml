@@ -32,6 +32,24 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Build
         run: mdbook build
+      - name: Generate sitemap.xml and robots.txt
+        # mdBook emits neither. Build a sitemap from the generated HTML (so it
+        # always covers every page) and a robots.txt that points crawlers at it.
+        run: |
+          BASE="https://docs.paddleboard.dev"
+          {
+            echo '<?xml version="1.0" encoding="UTF-8"?>'
+            echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            find book -type f -name '*.html' ! -name '404.html' ! -name 'print.html' \
+              | sed 's|^book/||' | sort \
+              | while IFS= read -r f; do
+                  loc="$BASE/$f"; loc="${loc%index.html}"
+                  echo "  <url><loc>${loc}</loc></url>"
+                done
+            echo '</urlset>'
+          } > book/sitemap.xml
+          printf 'User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n' "$BASE" > book/robots.txt
+          echo "Generated sitemap with $(grep -c '<url>' book/sitemap.xml) URLs"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
