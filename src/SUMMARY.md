@@ -6,6 +6,7 @@
 
 # AI & Agents
 
+- [Personas: Tell Your Agent Who to Be](./personas.md)
 - [Configuring LLM Providers](./llm-providers.md)
 - [The AI Dock](./ai-dock.md)
 - [Agent Frameworks](./agent-frameworks.md)
