@@ -75,6 +75,31 @@ Three ways, in increasing order of laziness:
    one-click **Add to project / Add to user** install, and lists every persona
    discovered in your project.
 
+## Composing personas with `extends:`
+
+A persona can inherit another's rules:
+
+```markdown
+---
+name: strict-qa
+description: QA engineer on the house base.
+extends: house-base
+---
+```
+
+The parent's body is included in the overlay ahead of the child's (chains are
+followed; cycles are cut; a missing parent is skipped with a warning), so the
+child's own rules always read last and win. Use it to keep a shared
+"house style" base that every role builds on.
+
+## Personas for sub-agents
+
+Delegated work can wear its own identity: the agent can pass `persona` to its
+`spawn_agent` tool — or you can ask it to ("have a QA-persona sub-agent review
+this"). The sub-agent holds that identity for its whole session while your
+main thread keeps its own voice. A review pass that genuinely thinks like a
+reviewer beats an implementer grading their own work.
+
 ## How it works
 
 The persona is injected into the agent's system prompt as an identity overlay,
