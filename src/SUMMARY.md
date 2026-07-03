@@ -7,6 +7,7 @@
 # AI & Agents
 
 - [Personas: Tell Your Agent Who to Be](./personas.md)
+- [Set Sail: Deploy to Serverless](./set-sail.md)
 - [Configuring LLM Providers](./llm-providers.md)
 - [The AI Dock](./ai-dock.md)
 - [Agent Frameworks](./agent-frameworks.md)
