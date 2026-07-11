@@ -17,6 +17,7 @@
 
 - [Language Support](./languages.md)
 - [Git Login](./git-login.md)
+- [Manifest: Git at a Glance](./manifest.md)
 - [Sandboxed Execution & MCP](./sandbox.md)
 - [Search & Status Bar Extras](./editor-extras.md)
 
