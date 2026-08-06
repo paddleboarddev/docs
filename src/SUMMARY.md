@@ -21,6 +21,11 @@
 - [Sandboxed Execution & MCP](./sandbox.md)
 - [Search & Status Bar Extras](./editor-extras.md)
 
+# Platforms
+
+- [Linux](./linux.md)
+- [Windows](./windows.md)
+
 # Reference
 
 - [Settings Reference](./settings-reference.md)
