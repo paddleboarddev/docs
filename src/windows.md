@@ -61,6 +61,33 @@ Everything else in the AI stack is platform-independent — bring your own API k
 PaddleBoard at any OpenAI-compatible endpoint, including one you run yourself on the same
 machine.
 
+## Troubleshooting
+
+PaddleBoard links here from two Windows failures.
+
+### Could not start ReadDirectoryChangesW
+
+PaddleBoard watches project files with `ReadDirectoryChangesW`, which **network
+filesystems and WSL paths do not reliably support**. Opening a project from a UNC share, a
+mapped network drive, or a `\\wsl$\...` path can fail at startup with
+`ReadDirectoryChangesW initialization failed`.
+
+Open the project from a **local NTFS path** instead. If the files genuinely live in WSL,
+run the **Linux build inside WSL** rather than reaching into WSL from Windows — see below.
+
+### Software-emulated graphics
+
+PaddleBoard renders through DirectX on Windows. Without a usable GPU driver the system
+falls back to software emulation, which is too slow to edit in, so PaddleBoard warns
+instead of letting it look like an unexplained stutter.
+
+Install your GPU vendor's driver. To proceed on software rendering anyway — a VM, or a
+remote session — set:
+
+```powershell
+$env:PADDLEBOARD_ALLOW_EMULATED_GPU=1
+```
+
 ## WSL
 
 If you want a supported PaddleBoard on Windows hardware today, **WSL2 is the shortest path**:

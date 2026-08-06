@@ -93,6 +93,73 @@ back to Podman + gVisor, then to the native tier.
 Click the **shield** in the status bar to see which tier is active on this machine. Your
 choice is honored — PaddleBoard never silently downgrades you to a weaker tier.
 
+## Troubleshooting
+
+These are the failures PaddleBoard links here from directly, so the headings below are the
+link targets — keep their wording if you edit them.
+
+### Could not start inotify
+
+PaddleBoard watches project files with inotify, and the kernel caps how many watches and
+instances a user may hold. On a large project, or with several editors open, you can hit
+that cap and see `inotify_init returned ...` at startup.
+
+Check the current limits and raise them:
+
+```sh
+cat /proc/sys/fs/inotify/max_user_instances   # often 128
+cat /proc/sys/fs/inotify/max_user_watches     # often 65536 or 524288
+
+sudo sysctl fs.inotify.max_user_instances=1024
+sudo sysctl fs.inotify.max_user_watches=1048576
+```
+
+To make it stick across reboots, put the same two settings in
+`/etc/sysctl.d/60-paddleboard.conf` and run `sudo sysctl --system`.
+
+### I can't open any files
+
+If the file picker never appears, PaddleBoard has no **xdg-desktop-portal** implementation
+to talk to. The portal is what a sandboxed or Wayland-native app uses to show a native
+file dialog; without a backend installed and running, there is nothing to show.
+
+Install the backend that matches your desktop:
+
+```sh
+# GNOME / most desktops
+sudo apt install xdg-desktop-portal xdg-desktop-portal-gtk
+# KDE
+sudo apt install xdg-desktop-portal xdg-desktop-portal-kde
+# wlroots compositors (Sway, Hyprland)
+sudo apt install xdg-desktop-portal xdg-desktop-portal-wlr
+```
+
+Then log out and back in, or restart the service:
+
+```sh
+systemctl --user restart xdg-desktop-portal
+```
+
+### PaddleBoard fails to open windows
+
+PaddleBoard renders through Vulkan on Linux. If no usable Vulkan driver is present, the
+system falls back to software emulation (llvmpipe) — which technically works and is far too
+slow to edit in, so PaddleBoard warns rather than letting you discover it as mystery lag.
+
+Install the Vulkan driver for your GPU (`mesa-vulkan-drivers` covers AMD and Intel; NVIDIA
+ships its own), then confirm the loader can see it:
+
+```sh
+vulkaninfo | head        # from vulkan-tools
+```
+
+If you know you're on software rendering and want to proceed anyway — a VM, a remote
+session, a screenshot run — set:
+
+```sh
+PADDLEBOARD_ALLOW_EMULATED_GPU=1 paddleboard
+```
+
 ## Remote development
 
 The remote server is built as a **statically linked musl binary**, so it runs on hosts
