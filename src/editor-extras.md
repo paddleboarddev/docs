@@ -1,6 +1,6 @@
 # Search & Status Bar Extras
 
-Two quality-of-life additions on top of Zed's editor.
+Quality-of-life additions on top of Zed's editor.
 
 ## Search as you type
 
@@ -30,3 +30,20 @@ the model's **context window** the active thread has used:
 The gauge is **purely local**: it displays counts the agent thread already tracks on your
 machine. Nothing is collected or reported — PaddleBoard's telemetry stays
 [hard-disabled](./settings-reference.md#telemetry).
+
+## The rest of the status bar
+
+PaddleBoard adds several other status bar items, each documented with the feature it belongs
+to:
+
+| Item | What it does |
+|---|---|
+| **Shield** | which [sandbox](./sandbox.md) tier is active; click to switch backends |
+| **MCP** | [MCP server](./sandbox.md) status, with streaming logs |
+| **Sailboat** | [Set Sail](./set-sail.md) deploy status |
+| **Placid** | toggles Placid mode |
+| **Update** | appears only while an update is downloading or installing, then as **Restart to update** |
+
+Any of them — and the context gauge above — can be hidden with
+[`paddleboard_ui`](./settings-reference.md#chrome-visibility). Hiding an item doesn't disable
+the feature; everything stays reachable from the command palette.

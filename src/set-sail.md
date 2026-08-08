@@ -62,9 +62,17 @@ aws lambda delete-function --function-name <service-name>
 vercel remove <service-name>
 ```
 
+## Rig the pipeline
+
+The second mode. Instead of a one-off deploy, Set Sail sets up the durable flow — repo,
+GitHub Actions workflow, workload identity — so every `git push` deploys, the way production
+teams work. Pick it in the Set Sail modal alongside **Quick deploy**.
+
+Pipeline support arrives per platform, as each one's s8sskills pack is authored. It's ready
+for **Cloud Run, AWS Lambda, and Vercel**; on Azure, Cloudflare, and Netlify the modal shows
+a "coming soon" note and Quick deploy still works. A custom platform bypasses the check
+entirely, since you supply the steps.
+
 ## What's next
 
-- **Rig the pipeline** (planned): instead of a one-off deploy, Set Sail will
-  set up the durable flow — repo, GitHub Actions workflow, workload identity —
-  so every `git push` deploys, the way production teams work.
-- More platforms as s8sskills packs land.
+- More platforms as s8sskills packs land — both for Quick deploy and for pipelines.
