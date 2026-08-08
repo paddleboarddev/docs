@@ -6,26 +6,52 @@ system needs, and the two places Linux behaves differently from macOS.
 ## Install
 
 Download `paddleboard-linux-x86_64.tar.gz` from
-[Releases](https://github.com/paddleboarddev/paddleboard/releases), unpack it, and run the
-bundled installer:
+[Releases](https://github.com/paddleboarddev/paddleboard/releases) and unpack it. The
+archive contains no installer, and there is no `curl | sh` bootstrap — PaddleBoard runs no
+hosted release server, so the tarball on the Releases page is the whole distribution.
+
+To try it without installing anything, run it in place:
 
 ```sh
 tar -xzf paddleboard-linux-x86_64.tar.gz
-cd paddleboard.app
-./install.sh
+./paddleboard.app/bin/paddleboard
 ```
 
-`install.sh` puts the binary on your `PATH` and registers the desktop entry and icons, so
-PaddleBoard appears in your application launcher. To install by hand instead, the archive
-is an ordinary prefix tree:
+To install it for your user, unpack into `~/.local/` and link it onto your `PATH`:
+
+```sh
+tar -xzf paddleboard-linux-x86_64.tar.gz -C ~/.local/
+mkdir -p ~/.local/bin ~/.local/share/applications
+ln -sf ~/.local/paddleboard.app/bin/paddleboard ~/.local/bin/paddleboard
+```
+
+That's enough to run `paddleboard` from a terminal, provided `~/.local/bin` is on your
+`PATH`. To also get PaddleBoard into your application launcher, install the desktop entry
+and point it at absolute paths:
+
+```sh
+desktop=~/.local/share/applications/dev.paddleboard.PaddleBoard.desktop
+cp ~/.local/paddleboard.app/share/applications/dev.paddleboard.PaddleBoard.desktop "$desktop"
+sed -i "s|Exec=paddleboard|Exec=$HOME/.local/paddleboard.app/bin/paddleboard|g" "$desktop"
+sed -i "s|Icon=paddleboard|Icon=$HOME/.local/paddleboard.app/share/icons/hicolor/512x512/apps/paddleboard.png|g" "$desktop"
+```
+
+The archive is an ordinary prefix tree, so it can live anywhere you prefer:
 
 | Path | Contents |
 |---|---|
-| `bin/` | the `paddleboard` binary and the `cli` helper |
+| `bin/paddleboard` | the launcher and command-line interface — this is what you run |
+| `libexec/paddleboard-editor` | the editor itself, started by the launcher |
+| `libexec/paddleboard-krun-helper` | helper for the microVM sandbox tier |
+| `libexec/llama/` | the bundled llama.cpp runtime for managed local models |
 | `lib/` | bundled shared libraries the binary needs |
 | `share/applications/` | the `.desktop` entry |
 | `share/icons/hicolor/{512x512,1024x1024}/apps/` | application icons |
 | `licenses.md` | third-party licenses |
+
+> `script/install.sh` in the source repo is **not** an installer for this archive — it
+> installs a tarball you built yourself, via `script/install-linux`, and exits with an
+> error if you run it without one.
 
 ## x86_64 only
 
@@ -38,15 +64,57 @@ from source and pull updates by rebuilding.
 
 ## glibc requirement
 
-The release is built on **Ubuntu 22.04**, which sets the floor at **glibc 2.35**. Anything
-older — Ubuntu 20.04, Debian 11, RHEL 8 — won't run the published binary and will fail at
-load time with a message about `GLIBC_2.35` not being found.
+The published binary requires **glibc 2.34 or newer**. That is the highest versioned symbol
+anything in the archive asks for — the launcher, the editor, and every bundled library in
+`lib/` and `libexec/llama/` all top out at `GLIBC_2.34`. On anything older it fails at load
+time with a message about a `GLIBC_2.3x` version not being found.
+
+| Distribution | glibc | Runs |
+|---|---|---|
+| Ubuntu 22.04 and newer | 2.35+ | yes |
+| Debian 12 (bookworm) and newer | 2.36+ | yes |
+| RHEL / Rocky / AlmaLinux 9 | 2.34 | yes — exactly at the floor |
+| Ubuntu 20.04 | 2.31 | no |
+| Debian 11 (bullseye) | 2.31 | no |
+| RHEL 8 | 2.28 | no |
 
 On an older distribution, build from source against your own glibc.
 
-> This floor is a property of the CI image, not a deliberate policy. It is pinned to
-> `ubuntu-22.04` precisely so it can't drift upward without someone choosing it — a newer
-> image would silently raise the minimum distro that can run PaddleBoard.
+> The floor comes from the CI image rather than from a deliberate policy, so it moves only
+> when someone changes that image. The release job is pinned to `ubuntu-22.04` precisely so
+> it can't drift upward unnoticed — a newer image would silently raise the minimum distro
+> that can run PaddleBoard. The binary happens to ask for less than that image provides,
+> which is why glibc 2.34 systems are in.
+
+## System libraries
+
+Almost everything the binary links against ships inside the archive — `libstdc++`, `libssl`
+and `libcrypto`, `libxcb`, `libxkbcommon`, and the X11 shims are all in `lib/`, and the
+binary carries an `RPATH` of `$ORIGIN/../lib`, so it finds them without `LD_LIBRARY_PATH`.
+
+One library is **not** bundled and has to come from your system:
+
+```sh
+# Debian / Ubuntu
+sudo apt install libasound2        # libasound2t64 on Ubuntu 24.04 and newer
+# Fedora / RHEL
+sudo dnf install alsa-lib
+# Arch
+sudo pacman -S alsa-lib
+```
+
+`libasound.so.2` is a hard link-time dependency, so when it's missing PaddleBoard fails
+before it starts, with a dynamic-loader error rather than a PaddleBoard one:
+
+```
+error while loading shared libraries: libasound.so.2: cannot open shared object file
+```
+
+Desktop installs nearly always have it already. Minimal, container, and server images
+often don't.
+
+Vulkan is a runtime requirement too, but it's loaded dynamically and degrades more
+gracefully — see [PaddleBoard fails to open windows](#paddleboard-fails-to-open-windows).
 
 ## Build from source
 
