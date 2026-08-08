@@ -5,17 +5,42 @@ of directly on your host.
 
 ## Secure agent sandbox
 
-Tool calls that execute code run inside an ephemeral `ubuntu:latest` container via
-[Podman](https://podman.io/) + the [`runsc`](https://gvisor.dev/) (gVisor) kernel runtime.
-Your project is bind-mounted; the rest of the host filesystem is not exposed. Permissions
-still flow through the normal approve / deny / always-allow UI.
+Tool calls that execute code run in an isolated environment rather than on your host. Your
+project is bind-mounted; the rest of the host filesystem is not exposed. Permissions still
+flow through the normal approve / deny / always-allow UI.
 
-A status-bar shield shows live prereq status. If Podman/gVisor aren't available, behavior is
-governed by `paddleboard_sandbox.on_missing_runtime`:
+There are two tiers.
 
-- `block` (default) — opens the install modal.
-- `fall_back_to_host` — run on the host instead.
-- `warn_once` — warn, then run on the host.
+**Native — zero-install, and the default on macOS.** Apple's `container` framework on
+macOS 26+, otherwise a bundled libkrun microVM. Nothing to install; it ships with
+PaddleBoard. On Linux it's libkrun over KVM.
+
+**Podman + gVisor.** An ephemeral `ubuntu:latest` container via
+[Podman](https://podman.io/) with the [`runsc`](https://gvisor.dev/) kernel runtime. This is
+the default on Linux and Windows, and you install it yourself.
+
+> ⚠️ **The native tier currently covers one-shot commands only.** Long-lived services,
+> sandboxed MCP transports, and REPL kernels still require Podman + gVisor — with the native
+> tier alone, those paths behave exactly as they would with no sandbox stack installed, and
+> follow the policy below.
+
+The status-bar **shield** shows which tier is active. Your choice is honored exactly:
+`native` is used even when Podman is installed, and `podman` is never silently rerouted to
+native when it's missing. See
+[`preferred_backend`](./settings-reference.md#sandbox).
+
+If the required prerequisites aren't available, `paddleboard_sandbox.on_missing_runtime`
+decides what happens:
+
+| Value | Behavior |
+|---|---|
+| `block` (default) | refuse to run and open the install modal; the agent gets a clear error rather than a hang |
+| `fall_back_to_host` | run the command on the host, unsandboxed |
+| `warn_once` | **proceed sandboxed**, logging a one-shot warning with install guidance |
+
+Note that `warn_once` does **not** drop you to the host — it's the quiet variant of `block`,
+not of `fall_back_to_host`. `fall_back_to_host` is the only setting that runs agent code
+unsandboxed.
 
 ## Sandboxed MCP servers
 

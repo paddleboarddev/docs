@@ -35,9 +35,23 @@ provider. Power users can still point it at their own `llama.cpp` server.
 
 ## Supported providers
 
-Includes Anthropic, OpenAI (and ChatGPT subscription auth), Google AI (Gemini), **Google
-Vertex AI**, Amazon Bedrock, DeepSeek, Mistral, OpenRouter, Vercel AI Gateway, PaddleBoard's
-managed **Local Models**, and other local runners (Ollama, LM Studio).
+| | |
+|---|---|
+| **Hosted APIs** | Anthropic, OpenAI (and ChatGPT subscription auth), Google AI (Gemini), Google Vertex AI, Amazon Bedrock, DeepSeek, Mistral, xAI, OpenRouter, Vercel AI Gateway |
+| **Subscription-backed** | GitHub Copilot Chat, OpenCode |
+| **Local** | PaddleBoard's managed **Local Models**, Ollama, LM Studio |
+| **Anything else** | the generic **OpenAI-compatible** provider — point it at any endpoint speaking the OpenAI API, including a LiteLLM proxy or a self-hosted gateway |
+
+### Zed's hosted models
+
+PaddleBoard is a fork of Zed, and Zed's hosted models are available here as one provider
+among the others. Signing in is **entirely optional** — it is never a default, nothing is
+gated behind it, and BYO keys and local models are first-class alternatives. It's offered
+because some users want it and because using it sends business to the upstream project this
+fork is built on.
+
+If you do sign in and exhaust Zed's free prompts, the upgrade prompt you see is Zed's, and
+the subscription is Zed's. PaddleBoard sells nothing.
 
 ## Google Vertex AI (Gemini Enterprise)
 

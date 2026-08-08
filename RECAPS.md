@@ -5,6 +5,18 @@ groups a day; each `### ` is one coherent unit of work.
 
 ## 2026-08-08
 
+### Accuracy pass over the docs, verified against the shipping code
+
+- **Every claim below was checked against the repo rather than reread for plausibility**, which is the only way this class of error surfaces — all of it was fluent, confident prose that happened to describe an older build.
+- ⚠️ **The front page said "Status: alpha. Build from source — there are no released binaries yet, and builds are not yet notarized by Apple."** Signed, notarized builds have shipped since v0.1.14, and `getting-started.md` said so two clicks away. Now states what's actually published, without a version-specific label that will rot again.
+- ⚠️ **`warn_once` was documented backwards, on a security setting.** The page said "warn, then run on the host"; `SandboxGateDecision::WarnOnce` **proceeds sandboxed** — it's the quiet variant of `block`, not of `fall_back_to_host`. The docs now say so explicitly, and name `fall_back_to_host` as the only policy that runs agent code unsandboxed.
+- ⚠️ **The sandbox page described only the Podman + gVisor tier** — not the native zero-install tier that ships in the binary and is **the default on macOS**. Both tiers documented, with the phase-1 limit stated: native covers one-shot commands only, so services, MCP transports and REPL kernels still need Podman.
+- **Settings Reference documented 3 of 8 `paddleboard_*` settings groups.** Added `paddleboard_auto_update`, `paddleboard_ui` (10 chrome toggles), `paddleboard_personas`, `paddleboard_rag`, and `paddleboard_usage`; completed `paddleboard_sandbox` (`prereq_check_enabled`, `preferred_backend`) and `paddleboard_otel` (`service_name`, the `OTEL_EXPORTER_OTLP_ENDPOINT` override). Every default was read out of the settings structs or `default.json`, not recalled.
+- ⚠️ **"Rig the pipeline" was still listed as planned.** It shipped as `Mode::RigPipeline` — the accurate nuance is that it's gated per platform by whether the s8sskills pack exists (`pipeline_ready()`), ready on Cloud Run / Lambda / Vercel, "coming soon" on Azure / Cloudflare / Netlify.
+- **The AI Dock page listed 3 tabs; there are 5** — Personas and Usage were missing — and the bundled skills list was 5 of the catalog's 9. Both now read off `AiDockTab` and `catalog.json`.
+- **The provider list was missing five registered providers** — xAI, GitHub Copilot Chat, OpenCode, the generic OpenAI-compatible provider (the LiteLLM path), and Zed's hosted models. Zed's got its own subsection: optional, never a default, and honest that the upgrade prompt and the subscription are Zed's, since a user *will* see "Sign in to use Zed" in the app and had nothing to read about it.
+- **Verified correct and left alone:** `search_on_type` default and its 200ms debounce, the sandbox `on_missing_runtime` values, Basedpyright's Python default, the Vertex auth precedence, `Gemma 3 4B` as the local default, `.claude/commands/` as the skills directory, and the tour's `workspace: Open Paddle Board Tour` action name.
+- ⏸️ **Not covered this pass:** `personas.md`, `manifest.md`, `git-login.md`, `agent-frameworks.md`, `scion.md`, `windows.md`. They were scanned for stale forward-looking claims and came back clean, but their details haven't been line-checked against code the way the pages above were.
 ### The Linux page, corrected against the actual v0.2.6 tarball
 
 - **Everything here came from unpacking the shipped `paddleboard-linux-x86_64.tar.gz`** and reading it with `llvm-objdump`, rather than from the build scripts. The page was originally written from `script/bundle-linux`, which is why all three errors below are things the source predicts correctly but the artifact contradicts.
