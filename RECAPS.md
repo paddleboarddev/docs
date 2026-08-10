@@ -5,6 +5,16 @@ groups a day; each `### ` is one coherent unit of work.
 
 ## 2026-08-08
 
+### The glibc floor is 2.35 — correcting a wrong number this repo published earlier today
+
+- ⚠️ **Earlier today this page was "corrected" from 2.35 to 2.34. That correction was wrong, and it shipped.** The original text was right for the wrong reason (it reasoned from the CI image); the replacement was wrong for a reason that looked rigorous. Live for about 90 minutes.
+- ⚠️ **The mistake: the static sweep read only the `libc.so.6` version-reference block.** `llvm-objdump -p` emits a separate `required from` block per needed library, and the editor's **`libm.so.6` block asks for `GLIBC_2.35`** — one release above anything in the libc block. Filtering to `/required from libc.so.6:/` capped the answer at 2.34 and never saw it. **Take the max across every block, not one.**
+- ✅ **Now verified by execution, not inference** — the check that had been carried as "outstanding" since the release. Podman (there is no Docker on this machine; `docker` is an alias) running amd64 images under emulation on Apple silicon: **Ubuntu 22.04 runs it, Ubuntu 20.04 fails, Rocky 9 fails.**
+- ⚠️ **Rocky 9 is the row that matters.** glibc 2.34 — one release short — and the wrong table told that whole family (RHEL 9, Rocky, Alma) they were supported. Its failure is now a tested row, not a predicted one.
+- ✅ **The `libasound.so.2` finding held up exactly as documented** — stock `ubuntu:22.04` fails with the precise error the page quotes, and once `libasound2` is installed the editor loads with **zero** unresolved libraries and reaches PaddleBoard's own root check. It really is the only external dependency.
+- **Added a troubleshooting ordering note that only running it could reveal:** the loader reports libraries it can't find *before* it version-checks the ones it can, so installing ALSA on an old distro converts a `libasound.so.2` error into a `GLIBC_2.35` error. That looks like a new problem and is actually progress.
+- **The page now marks which rows are tested**, and records the libm-block trap for whoever re-derives the number next.
+
 ### Accuracy pass over the docs, verified against the shipping code
 
 - **Every claim below was checked against the repo rather than reread for plausibility**, which is the only way this class of error surfaces — all of it was fluent, confident prose that happened to describe an older build.

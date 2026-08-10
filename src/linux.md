@@ -64,27 +64,35 @@ from source and pull updates by rebuilding.
 
 ## glibc requirement
 
-The published binary requires **glibc 2.34 or newer**. That is the highest versioned symbol
-anything in the archive asks for — the launcher, the editor, and every bundled library in
-`lib/` and `libexec/llama/` all top out at `GLIBC_2.34`. On anything older it fails at load
-time with a message about a `GLIBC_2.3x` version not being found.
+The published binary requires **glibc 2.35 or newer** — the same floor as the `ubuntu-22.04`
+image the release is built on. The editor asks `libm.so.6` for `GLIBC_2.35`. On anything
+older it fails at load time with a message about a `GLIBC_2.3x` version not being found.
 
 | Distribution | glibc | Runs |
 |---|---|---|
-| Ubuntu 22.04 and newer | 2.35+ | yes |
+| Ubuntu 22.04 and newer | 2.35+ | yes — verified |
 | Debian 12 (bookworm) and newer | 2.36+ | yes |
-| RHEL / Rocky / AlmaLinux 9 | 2.34 | yes — exactly at the floor |
-| Ubuntu 20.04 | 2.31 | no |
+| RHEL / Rocky / AlmaLinux 9 | 2.34 | no — verified to fail |
+| Ubuntu 20.04 | 2.31 | no — verified to fail |
 | Debian 11 (bullseye) | 2.31 | no |
 | RHEL 8 | 2.28 | no |
+
+RHEL 9 and its rebuilds miss by a single glibc release. That's close enough to look like it
+ought to work, and it doesn't.
 
 On an older distribution, build from source against your own glibc.
 
 > The floor comes from the CI image rather than from a deliberate policy, so it moves only
 > when someone changes that image. The release job is pinned to `ubuntu-22.04` precisely so
 > it can't drift upward unnoticed — a newer image would silently raise the minimum distro
-> that can run PaddleBoard. The binary happens to ask for less than that image provides,
-> which is why glibc 2.34 systems are in.
+> that can run PaddleBoard.
+
+> **How this was checked.** The rows marked *verified* were tested by running the shipped
+> binary inside that distribution's container image, not by reading the binary's headers.
+> Header-reading got this wrong once: a sweep that looked only at the `libc.so.6`
+> version-reference block concluded the floor was 2.34, because the `GLIBC_2.35` requirement
+> lives in the **`libm.so.6`** block. If you re-derive this number, take the maximum across
+> *every* `required from` block — or just run it.
 
 ## System libraries
 
@@ -111,7 +119,15 @@ error while loading shared libraries: libasound.so.2: cannot open shared object 
 ```
 
 Desktop installs nearly always have it already. Minimal, container, and server images
-often don't.
+often don't. Verified by running the shipped binary in a stock `ubuntu:22.04` container:
+it fails with exactly the error above, and once `libasound2` is installed it loads with no
+unresolved libraries at all — this is the only external dependency.
+
+> If you're on both an old distribution *and* a minimal image, you'll see the missing-library
+> error first: the dynamic loader reports libraries it cannot find before it checks symbol
+> versions in the ones it can. Installing ALSA can therefore turn a `libasound.so.2` error
+> into a `GLIBC_2.35` one. That's progress, not a new problem — see
+> [glibc requirement](#glibc-requirement).
 
 Vulkan is a runtime requirement too, but it's loaded dynamically and degrades more
 gracefully — see [PaddleBoard fails to open windows](#paddleboard-fails-to-open-windows).
