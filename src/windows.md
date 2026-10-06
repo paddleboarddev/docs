@@ -1,26 +1,52 @@
 # Windows
 
-**There is no Windows release.** PaddleBoard publishes signed builds for macOS and Linux
-only. On Windows you build from source, and you should know what you're taking on before
-you do.
+**Windows ships as an unsigned preview.** Since 0.3.0 every release carries a
+`PaddleBoard-x86_64-windows-preview.zip`, built in CI from the same source as the
+signed macOS and Linux releases. It is a preview, not a release-grade build, and the
+differences are listed here so you know what you are taking on before you unzip it.
 
 ## The honest status
 
-Windows code is inherited from Zed and is still present — PaddleBoard hasn't removed it,
-and `script/bundle-windows.ps1` exists. But:
-
 | | Status |
 |---|---|
-| Published release asset | **None** |
-| Built in CI | **No** — the compile gate covers Linux and macOS only |
-| Tested in CI | **No** |
-| Automatic updates | **Not available** |
+| Published release asset | **Unsigned zip** (x86_64), with a SHA-256 beside it |
+| Built in CI | **Yes** — the release workflow builds it on every tag |
+| Tested in CI | **No** — the compile and test gates still cover Linux and macOS only |
+| Code-signed | **No** — SmartScreen warns on first run |
+| Installer | **None** — unzip and run |
+| Automatic updates | **Not available** — download the next zip |
 | Managed Local Models | **Not available** |
+| arm64 | **Not yet** — build from source |
 
-Because nothing in CI compiles for Windows, Windows-only breakage can land on `main` and
-stay there without any check going red. If you build on Windows and something is broken,
-that is genuinely useful information — please
+The compile gate does not run on Windows, so Windows-only breakage can still land on
+`main` between releases. If something is broken in a preview build, that is genuinely
+useful information: please
 [open an issue](https://github.com/paddleboarddev/paddleboard/issues).
+
+## Download the preview
+
+1. Download `PaddleBoard-x86_64-windows-preview.zip` from the
+   [latest release](https://github.com/paddleboarddev/paddleboard/releases/latest).
+2. Optionally verify it against the `.zip.sha256` next to it:
+
+   ```powershell
+   (Get-FileHash .\PaddleBoard-x86_64-windows-preview.zip -Algorithm SHA256).Hash
+   ```
+
+3. Unzip it anywhere and run `PaddleBoard.exe`.
+4. **SmartScreen will warn** that the publisher is unknown, because the build is not
+   signed. Click *More info*, then *Run anyway*. You only see this once per download.
+
+`bin\paddleboard.exe` is the command-line launcher. Add `bin\` to your `PATH` to use
+`paddleboard <path>` from a terminal. `README-PREVIEW.txt` in the zip repeats the limits
+on this page.
+
+## Known issues
+
+- **The window cannot be dragged by its title bar**
+  ([#87](https://github.com/paddleboarddev/paddleboard/issues/87)). Resize and
+  maximise work; moving the window does not. This is the top Windows bug.
+- Everything under [What won't work](#what-wont-work) below.
 
 ## Build from source
 
@@ -37,8 +63,9 @@ Then:
 cargo run --release
 ```
 
-`script/bundle-windows.ps1` produces a distributable build. It is inherited from Zed and is
-not exercised by PaddleBoard's CI.
+`script/bundle-windows-preview.ps1` produces the same zip that CI publishes. The inherited
+`script/bundle-windows.ps1` (installer, code signing) is Zed's and is not used by
+PaddleBoard.
 
 ## What won't work
 
@@ -47,9 +74,9 @@ as an error — the surfaces simply won't offer you anything.
 
 ### Automatic updates
 
-The updater maps your platform to a release asset. Windows has no mapping, so no update is
-ever offered. "Check for Updates" cannot find a build for you. Update by pulling and
-rebuilding.
+The updater's Windows path expects an installer, and the preview is a zip, so no update is
+ever offered. "Check for Updates" cannot find a build for you. Update by downloading the
+next release's zip.
 
 ### Managed Local Models
 
@@ -88,15 +115,17 @@ remote session — set:
 $env:PADDLEBOARD_ALLOW_EMULATED_GPU=1
 ```
 
+Logs live in `%LOCALAPPDATA%\PaddleBoard\logs`.
+
 ## WSL
 
-If you want a supported PaddleBoard on Windows hardware today, **WSL2 is the shortest path**:
-install the Linux build inside WSL and run it there, where releases, automatic updates, and
-local models all work normally. See [Linux](./linux.md).
+If you want automatic updates and local models on Windows hardware today, **WSL2 is the
+path**: install the Linux build inside WSL and run it there, where releases, automatic
+updates, and local models all work normally. See [Linux](./linux.md).
 
 ## Roadmap
 
-A Windows release is wanted but not scheduled. The blockers are the ordinary ones for a
-small project — CI capacity to build and test it, and somewhere to get it signed so it
-doesn't trip SmartScreen. If Windows support matters to you, say so on the issue tracker;
-demand is what moves it up the list.
+From preview to release means three things: code signing so SmartScreen stays quiet, an
+installer so updates can be automatic, and Windows in the compile gate so breakage is caught
+before a tag. None has a date. If Windows support matters to you, say so on the issue
+tracker; demand is what moves it up the list.
