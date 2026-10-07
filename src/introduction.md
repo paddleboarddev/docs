@@ -9,8 +9,9 @@ layers on the pieces a modern coding agent actually needs — on your terms:
 - **The AI Dock** — install and manage agents, skills, and MCP servers from one place.
 - **Private by default** — telemetry is hard-disabled at the source; no account required. Even usage visibility (the agent context gauge in the status bar) is computed and displayed entirely on your machine.
 
-> **Status: active development.** Signed, notarized builds are published for macOS (Apple
-> Silicon) and Linux (x86_64) — you don't have to build from source. See
+> **Status: beta.** Builds are published for macOS (Apple Silicon, signed and notarized),
+> Linux (x86_64), and Windows (x86_64, unsigned preview), so you don't have to build from
+> source. See
 > [Getting Started](./getting-started.md).
 
 These docs are task-oriented "how-to" guides. For a quick in-app tour, open the command
