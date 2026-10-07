@@ -1,7 +1,7 @@
 # Getting Started
 
-PaddleBoard is in active development, but you don't have to build it — signed releases are
-published for macOS and Linux.
+PaddleBoard is in beta, and you don't have to build it. Releases are published for macOS
+and Linux, and for Windows as an unsigned preview.
 
 ## Install a release (recommended)
 
@@ -12,14 +12,14 @@ Grab the latest build from
 |---|---|
 | macOS (Apple Silicon) | `PaddleBoard-aarch64.dmg` — code-signed and notarized |
 | Linux (x86_64) | `paddleboard-linux-x86_64.tar.gz` |
-| Windows | Build from source for now — see below |
+| Windows (x86_64) | `PaddleBoard-x86_64-windows-preview.zip` — unsigned preview, see [Windows](./windows.md) |
 
 The macOS build is signed and notarized with an Apple Developer ID, so it opens without
 Gatekeeper warnings.
 
 ## Build from source
 
-Needed on Windows, and useful if you want to hack on PaddleBoard itself.
+Needed on Intel Macs, ARM Linux and Windows on ARM, and useful if you want to hack on PaddleBoard itself.
 
 ### Prerequisites
 
