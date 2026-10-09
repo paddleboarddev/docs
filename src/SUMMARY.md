@@ -9,6 +9,7 @@
 - [Personas: Tell Your Agent Who to Be](./personas.md)
 - [Set Sail: Deploy to Serverless](./set-sail.md)
 - [Configuring LLM Providers](./llm-providers.md)
+- [Model Tiers: Local First, Escalate on Failure](./model-tiers.md)
 - [The AI Dock](./ai-dock.md)
 - [Agent Frameworks](./agent-frameworks.md)
 - [Scion: Isolated Parallel Agents](./scion.md)
