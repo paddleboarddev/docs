@@ -12,7 +12,7 @@ a guess about how hard the task looked.
 
 1. You name your tiers, cheapest first, from models you already have configured.
 2. You give the project a **check** command.
-3. After any agent turn that edits files, PaddleBoard runs the check in the agent's
+3. At the end of every agent turn, PaddleBoard runs the check in the agent's
    terminal. It appears in the thread as **Check: `your command`**, with the same
    sandbox and the same permission prompt as any command the agent runs.
 4. **Pass:** the turn ends.
@@ -29,7 +29,7 @@ with the model picker as usual (`cmd-alt-/` on macOS), or set it as your default
 ## Setting it up
 
 Tiers usually live in your user settings, because they describe your models. The
-check usually lives in the project's `.zed/settings.json`, because it describes the
+check usually lives in the project's `.paddleboard/settings.json`, because it describes the
 project. Both use the same `paddleboard_tiers` key, and project values win.
 
 User settings:
@@ -47,7 +47,7 @@ User settings:
 }
 ```
 
-Project `.zed/settings.json`:
+Project `.paddleboard/settings.json`:
 
 ```json
 {
@@ -81,9 +81,11 @@ including managed Local Models, Ollama, LM Studio and any OpenAI-compatible serv
 - **The check runs in the sandbox** when sandboxing is on, which has no network by
   default. Use a check that works offline, such as `cargo test --offline`, or one
   that doesn't fetch dependencies.
-- **Pick a check that is fast and specific.** It runs after every editing turn. The
+- **Pick a check that is fast and specific.** It runs after every agent turn. The
   tests for the crate you are working on beat the whole workspace's suite.
-- **Turns that only read or answer don't run the check.** Only edits do.
+- **The check runs even when the agent edited nothing.** Small local models sometimes
+  describe a fix, change no file and say they're done; the check is what catches it.
+  A question-only turn runs it too, which is another reason to keep it quick.
 - **Subagents don't run it.** The thread that spawned them runs its own check.
 - **A tier whose model isn't configured** still appears on the Blocker card, but it
   can't be chosen until you add its provider.
