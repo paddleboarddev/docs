@@ -1,8 +1,8 @@
-# Model Tiers: Local First, Escalate on Failure
+# Spotter: Local First, Escalate on Failure
 
 Most of an agent session is routine: a field added here, a docstring there, a test
 made to pass. A local model handles that for free. The hard 20% needs Claude or
-Gemini. **Model tiers** let the cheap model do the work and bring in a stronger one
+Gemini. **Spotter** lets the cheap model do the work and bring in a stronger one
 only when the work actually fails.
 
 What decides "failed" is your project's own check, a command like `cargo test`, not
@@ -30,13 +30,13 @@ with the model picker as usual (`cmd-alt-/` on macOS), or set it as your default
 
 Tiers usually live in your user settings, because they describe your models. The
 check usually lives in the project's `.paddleboard/settings.json`, because it describes the
-project. Both use the same `paddleboard_tiers` key, and project values win.
+project. Both use the same `paddleboard_spotter` key, and project values win.
 
 User settings:
 
 ```json
 {
-  "paddleboard_tiers": {
+  "paddleboard_spotter": {
     "enabled": true,
     "tiers": [
       { "name": "Local",   "model": { "provider": "ollama",    "model": "gemma3:12b" } },
@@ -51,7 +51,7 @@ Project `.paddleboard/settings.json`:
 
 ```json
 {
-  "paddleboard_tiers": {
+  "paddleboard_spotter": {
     "check": { "command": "cargo test -p my_crate", "timeout_seconds": 300 }
   }
 }
@@ -65,7 +65,7 @@ including managed Local Models, Ollama, LM Studio and any OpenAI-compatible serv
 
 | Setting | Default | What it does |
 |---|---|---|
-| `enabled` | `false` | Turns tiers on. Nothing runs without a `check` too. |
+| `enabled` | `false` | Turns Spotter on. Nothing runs without a `check` too. |
 | `tiers` | `[]` | The tiers, cheapest first. Each has a `name` and a `model`. |
 | `check.command` | none | The one-line command that decides pass or fail. |
 | `check.timeout_seconds` | `300` | A check that runs longer counts as failed. |
@@ -89,7 +89,7 @@ including managed Local Models, Ollama, LM Studio and any OpenAI-compatible serv
 - **Subagents don't run it.** The thread that spawned them runs its own check.
 - **A tier whose model isn't configured** still appears on the Blocker card, but it
   can't be chosen until you add its provider.
-- **Your manual choice wins.** Pick a model yourself at any time; tiers never switch
+- **Your manual choice wins.** Pick a model yourself at any time; Spotter never switches
   it back.
 
 ## Small local models
