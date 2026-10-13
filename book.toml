@@ -14,3 +14,7 @@ no-section-label = false
 
 [output.html.search]
 enable = true
+
+# Spotter shipped as "model tiers" until 2026-10-12; keep the old URL working.
+[output.html.redirect]
+"/model-tiers.html" = "spotter.html"
