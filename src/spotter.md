@@ -13,8 +13,8 @@ a guess about how hard the task looked.
 1. You name your tiers, cheapest first, from models you already have configured.
 2. You give the project a **check** command.
 3. At the end of every agent turn, PaddleBoard runs the check in the agent's
-   terminal. It appears in the thread as **Check: `your command`**, with the same
-   sandbox and the same permission prompt as any command the agent runs.
+   terminal. It appears in the thread as an ordinary card for your command, with
+   the same sandbox and the same permission prompt as any command the agent runs.
 4. **Pass:** the turn ends.
 5. **First failure:** the output goes back to the same model, which gets one more try.
    The check runs again when it says it's done, even if it changed nothing.
