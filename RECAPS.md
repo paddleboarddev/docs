@@ -3,6 +3,19 @@
 Running log of completed work on the PaddleBoard docs, newest first. Each `## YYYY-MM-DD`
 groups a day; each `### ` is one coherent unit of work.
 
+## 2026-10-22
+
+### Agent Instructions page: the optional `PADDLEBOARD.md` layer (#23, draft)
+
+- **Documented the PaddleBoard-only `PADDLEBOARD.md`** at both levels. It is read in addition to
+  `AGENTS.md` and the project rules file, never instead of them. "Which wins" now lists the four
+  layers in prompt order.
+- **Held as a draft until after the v0.3.0 announcement (26 Oct)**, because it documents
+  jasonsmithio/paddleboard#340, which ships after the cut. It is stacked on #22 and retargets to
+  `main` once #22 merges.
+- **Unverified:** the palette name "agent: open global PADDLEBOARD.md rules" is inferred from how
+  the existing `AGENTS.md` action is written on the page. Check it in a build of #340 before merging.
+
 ## 2026-08-08
 
 ### The glibc floor is 2.35 — correcting a wrong number this repo published earlier today
