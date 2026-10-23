@@ -6,6 +6,7 @@
 
 # AI & Agents
 
+- [Agent Instructions: Rules for Every Project, and for One](./agent-instructions.md)
 - [Personas: Tell Your Agent Who to Be](./personas.md)
 - [Set Sail: Deploy to Serverless](./set-sail.md)
 - [Configuring LLM Providers](./llm-providers.md)
