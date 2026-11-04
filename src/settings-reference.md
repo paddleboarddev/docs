@@ -149,8 +149,9 @@ by hand:
 }
 ```
 
-`"native"` is the zero-install tier — Apple `container` on macOS 26+, otherwise the bundled
-libkrun microVM, or libkrun over KVM on Linux. `"podman"` is the Podman + gVisor tier. Your
+`"native"` is the OS-native tier — Apple `container` on macOS 26+, otherwise the libkrun
+microVM, or libkrun over KVM on Linux. Apple `container` and libkrun are installed
+separately (see [Sandboxed Execution & MCP](./sandbox.md)). `"podman"` is the Podman + gVisor tier. Your
 choice is honored exactly: `native` is used even when Podman is installed, and `podman` is
 never silently rerouted to native when it's missing. Left unset, it defaults to `native` on
 macOS and `podman` on Linux and Windows. See [Sandboxed Execution & MCP](./sandbox.md).

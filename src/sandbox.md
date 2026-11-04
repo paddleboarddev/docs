@@ -11,9 +11,13 @@ flow through the normal approve / deny / always-allow UI.
 
 There are two tiers.
 
-**Native — zero-install, and the default on macOS.** Apple's `container` framework on
-macOS 26+, otherwise a bundled libkrun microVM. Nothing to install; it ships with
-PaddleBoard. On Linux it's libkrun over KVM.
+**Native — the OS-native tier, and the default on macOS.** Apple's `container` tool on
+macOS 26+, otherwise a libkrun microVM on Apple silicon. On Linux it's libkrun over KVM.
+PaddleBoard ships the microVM helper but not libkrun itself yet, so this tier needs a
+one-time install: Apple's [`container`](https://github.com/apple/container) (then run
+`container system start`), or `libkrun` and `libkrunfw`. The shield's **Set up in
+Terminal** button stages the right command for your machine. Bundling libkrun is tracked
+in [paddleboarddev/paddleboard#107](https://github.com/paddleboarddev/paddleboard/issues/107).
 
 **Podman + gVisor.** An ephemeral `ubuntu:latest` container via
 [Podman](https://podman.io/) with the [`runsc`](https://gvisor.dev/) kernel runtime. This is
