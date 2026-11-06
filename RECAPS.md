@@ -3,6 +3,14 @@
 Running log of completed work on the PaddleBoard docs, newest first. Each `## YYYY-MM-DD`
 groups a day; each `### ` is one coherent unit of work.
 
+## 2026-11-04
+
+### The Native sandbox tier is not zero-install yet
+
+- The Sandboxed Execution page and the `preferred_backend` entry in the settings reference called the Native tier "zero-install" with a "bundled libkrun microVM". v0.3.x ships the microVM helper but not `libkrun` or `libkrunfw` (paddleboarddev/paddleboard#107), and Apple's `container` is a separate install too.
+- Both now say what has to be installed and point to the shield's **Set up in Terminal** button. No install command is printed in the docs: the picker stages the right one per machine, and which Homebrew tap is canonical was still an open question on #107.
+- The same claims in the app (`WELCOME.md`, the tour, the picker summaries, the setting docs) are corrected in paddleboarddev/paddleboard#118. When #107 lands, the libkrun tiers can say zero-install again.
+
 ## 2026-08-08
 
 ### The glibc floor is 2.35 — correcting a wrong number this repo published earlier today
