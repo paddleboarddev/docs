@@ -35,14 +35,19 @@ jobs:
       - name: Generate sitemap.xml and robots.txt
         # mdBook emits neither. Build a sitemap from the generated HTML (so it
         # always covers every page) and a robots.txt that points crawlers at it.
+        # Pages that mark themselves noindex (mdBook's print.html and toc.html,
+        # and any helper page a later mdBook adds) are left out, so the sitemap
+        # never asks Google to index a page that tells it not to.
         run: |
           BASE="https://docs.paddleboard.dev"
           {
             echo '<?xml version="1.0" encoding="UTF-8"?>'
             echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
-            find book -type f -name '*.html' ! -name '404.html' ! -name 'print.html' \
-              | sed 's|^book/||' | sort \
-              | while IFS= read -r f; do
+            find book -type f -name '*.html' ! -name '404.html' \
+              | sort \
+              | while IFS= read -r path; do
+                  grep -q -i '<meta name="robots" content="noindex"' "$path" && continue
+                  f="${path#book/}"
                   loc="$BASE/$f"; loc="${loc%index.html}"
                   echo "  <url><loc>${loc}</loc></url>"
                 done
