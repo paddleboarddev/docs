@@ -32,12 +32,38 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Build
         run: mdbook build
+      - name: Add canonical links
+        # mdBook writes index.html as a byte-for-byte copy of the first chapter
+        # (introduction.html) and sets no canonical anywhere, so Google sees two
+        # identical pages and flags one "Duplicate without user-selected
+        # canonical". Give every indexable page a canonical: the site root for
+        # the copy of index.html, itself for everything else. Pages that already
+        # carry one (mdBook's redirect stubs) and noindex pages are left alone.
+        run: |
+          BASE="https://docs.paddleboard.dev"
+          # Compare against a copy taken first: index.html itself gets edited in
+          # the loop, after which nothing would match it.
+          root_copy="$(mktemp)"
+          cp book/index.html "$root_copy"
+          find book -type f -name '*.html' ! -name '404.html' \
+            | while IFS= read -r path; do
+                grep -q -i '<meta name="robots" content="noindex"' "$path" && continue
+                grep -q -i '<link rel="canonical"' "$path" && continue
+                f="${path#book/}"
+                loc="$BASE/$f"; loc="${loc%index.html}"
+                if [ "$path" != book/index.html ] && cmp -s "$path" "$root_copy"; then
+                  loc="$BASE/"
+                fi
+                CANONICAL="$loc" perl -0pi -e 's#</head>#    <link rel="canonical" href="$ENV{CANONICAL}">\n    </head>#' "$path"
+              done
       - name: Generate sitemap.xml and robots.txt
         # mdBook emits neither. Build a sitemap from the generated HTML (so it
         # always covers every page) and a robots.txt that points crawlers at it.
         # Pages that mark themselves noindex (mdBook's print.html and toc.html,
         # and any helper page a later mdBook adds) are left out, so the sitemap
-        # never asks Google to index a page that tells it not to.
+        # never asks Google to index a page that tells it not to. So are pages
+        # whose canonical is another URL (the introduction.html copy of the
+        # root, and redirect stubs), so the sitemap lists each page once.
         run: |
           BASE="https://docs.paddleboard.dev"
           {
@@ -49,6 +75,7 @@ jobs:
                   grep -q -i '<meta name="robots" content="noindex"' "$path" && continue
                   f="${path#book/}"
                   loc="$BASE/$f"; loc="${loc%index.html}"
+                  grep -q -i "<link rel=\"canonical\" href=\"${loc}\">" "$path" || continue
                   echo "  <url><loc>${loc}</loc></url>"
                 done
             echo '</urlset>'
